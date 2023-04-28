@@ -7,32 +7,20 @@ selectedChat:{},
 }
 
 const slice=createSlice({
-    name:"auth",
+    name:"chat",
     initialState,
     reducers:{
-logIn(state,action){
+selectTheChat(state,action){
   return {
     ...state,
-    user:action.payload.user,
-    isLoggedIn:true,
-    token:action.payload.token
+    selectedChat:action.payload
   }
-},
-
-logOut(state,action){
-return {
-...state,
-user:null,
-isLoggedIn:false,
-token:null
 }
-
-},
 
     }
 
 })
 
-export const {logIn,logOut}= slice.actions
+export const {selectTheChat}= slice.actions
 
 export default slice.reducer

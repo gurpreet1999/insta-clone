@@ -31,7 +31,7 @@ console.log(location)
  
       <div className="App">
         <LoginContext.Provider value={{ setUserLogin, setModalOpen }}>
-          {location.pathname.startsWith("/reel" || "/message") ?"":  <Navbar />
+          {location.pathname.startsWith("/message" || "/reel") ?"":  <Navbar />
           }
         
           <Routes>
