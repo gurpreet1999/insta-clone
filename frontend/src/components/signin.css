@@ -1,0 +1,90 @@
+.signin{
+
+    background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+.loginform{
+
+    
+    background-color: #fff;
+    padding:30px ;
+    border: 1px solid rgb(129, 121, 121);
+    border-radius: 5px ;
+}
+
+
+input{
+    padding: 5px;
+    margin: 3px 0px;
+    outline: none;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+    
+
+
+}
+.loginform >div{
+    width: 100%;
+    margin: auto;
+}
+#submit2{
+    background-color: #1773EA;
+border-radius: 3px;
+margin-bottom: 15px;
+border: none;
+color: wheat;
+font-weight: bold;
+padding: 7px;
+width: 100%;
+
+}
+
+.styling{
+    position: relative;
+
+text-align: center;
+
+
+
+}
+.styling::before{
+    position: absolute;
+    left:5px;
+    top:10px;
+content: "";
+width: 80px;
+
+border: 1px solid rgb(143, 127, 127);
+
+
+}
+
+.styling::after{
+    position: absolute;
+    right:5px;
+    top:10px;
+content: "";
+width: 80px;
+
+border: 1px solid rgb(143, 127, 127);
+
+
+}
+
+.fcbook{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    color: #062d5f;
+    color: #03289605;
+}
