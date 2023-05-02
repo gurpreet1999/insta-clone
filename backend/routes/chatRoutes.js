@@ -27,7 +27,7 @@ chatrouter.post("/accesschat", requirelogin, async (req, res, next) => {
       };
 
       const createdChat = await CHAT.create(newchat);
-      const fullchat = await CHAT.find({ _id: createdChat._id }).populate(
+      const fullchat = await CHAT.find({ _id:createdChat._id}).populate(
         "participants",
         "name id photo"
       );

@@ -31,8 +31,8 @@ router.post('/signin',(req,res,next)=>{
       //return res.status(200).json({message:"signed in successfully"})
 
 const token=jwt.sign({_id:saveduser._id},jwtkey)  // hume pehle parameter me woh wali id dalni hogi jo mongodb me uniqeily present he woh user ke liye
- const {_id,name,email,userName}=saveduser
-  res.json({token , user:{_id,name,email,userName}} )
+ const {_id,name,email,userName,photo}=saveduser
+  res.json({token , user:{_id,name,email,userName,photo}} )
 }
 
 else{

@@ -1,22 +1,25 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Box } from "@chakra-ui/layout";
 import SingleChat from "./SingleChat";
 import { useSelector } from "react-redux";
 import Avatar from "./Avatar";
-import { CaretDown, Link, MagnifyingGlass, PaperPlaneTilt, Phone, Smiley, VideoCamera } from "@phosphor-icons/react";
+import { CaretDown,Link, MagnifyingGlass, PaperPlaneTilt, Phone, Smiley, VideoCamera } from "@phosphor-icons/react";
+import {useQuery,useMutation,useQueryClient} from "@tanstack/react-query"
+import axios from "axios";
+import { getPhoto, getSender, getSenderFull, getSenderId, photo } from "./chatLogic";
+import {Link as MyLink} from "react-router-dom"
 
-
-const ChatItem=(props)=>{
+const ChatItem=({message,user})=>{
     return (
         <div
-        style={{ animationDelay: `0.8s` }}
-        className={`chat__item ${props.user ?props.user : ""}`}
+    
+        className={`chat__item ${getSenderFull(user,message)}`}
       >
         <div className="chat__item__content">
-          <div className="chat__msg">{props.msg}</div>
+          <div className="chat__msg">{message.text}</div>
          
         </div>
-        <Avatar isOnline="active" image={props.image} />
+        <Avatar isOnline="active" image={photo(user,message)} />
       </div>
     )
 }
@@ -24,70 +27,76 @@ const ChatItem=(props)=>{
 
 
 const ChatBox = () => {
+
+  const inputRef=useRef()
+
+  const queryclient=useQueryClient()
+
+  const {selectedChat}=useSelector(state=>state.chat)
+  const {token,user}=useSelector(state=>state.auth)
+
+  const fetchMyAllMessage=async()=>{
+const {data}= await axios.post("http://localhost:5000/allmessage",{chatid:selectedChat._id},{
+  headers:{
+    Authorization:"Bearer " + token
+  }
+})
+return data
+  }
+
+const {data:MyMessage}=useQuery(["mychatWithUser",selectedChat._id],fetchMyAllMessage,{
+  onSuccess:(data)=>{
+console.log(data)
+  },
+ 
+})
+
   
-const   chat= [
-    {
-      key: 1,
-      image:
-        "https://pbs.twimg.com/profile_images/1116431270697766912/-NfnQHvh_400x400.jpg",
-      type: "",
-      msg: "Hi Tim, How are you?",
-    },
-    {
-      key: 2,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTA78Na63ws7B7EAWYgTr9BxhX_Z8oLa1nvOA&usqp=CAU",
-      type: "other",
-      msg: "I am fine.",
-    },
-    {
-      key: 3,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTA78Na63ws7B7EAWYgTr9BxhX_Z8oLa1nvOA&usqp=CAU",
-      type: "other",
-      msg: "What about you?",
-    },
-    {
-      key: 4,
-      image:
-        "https://pbs.twimg.com/profile_images/1116431270697766912/-NfnQHvh_400x400.jpg",
-      type: "",
-      msg: "Awesome these days.",
-    },
-    {
-      key: 5,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTA78Na63ws7B7EAWYgTr9BxhX_Z8oLa1nvOA&usqp=CAU",
-      type: "other",
-      msg: "Finally. What's the plan?",
-    },
-    {
-      key: 6,
-      image:
-        "https://pbs.twimg.com/profile_images/1116431270697766912/-NfnQHvh_400x400.jpg",
-      type: "",
-      msg: "what plan mate?",
-    },
-    {
-      key: 7,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTA78Na63ws7B7EAWYgTr9BxhX_Z8oLa1nvOA&usqp=CAU",
-      type: "other",
-      msg: "I'm taliking about the tutorial",
-    },
-  ];
+
+const sendmessage=async(chat)=>{
+  if(chat.text===""){
+    console.log("no text")
+    return
+  }
+  inputRef.current.value=""
+  console.log(chat)
+ return  await axios.post("http://localhost:5000/sendmessage",chat,{
+headers:{
+  Authorization:"Bearer " + token
+}
+})
+
+}
+
+
+const sendMessagemutation=useMutation(sendmessage,{
+  onSuccess:(data)=>{
+
+queryclient.invalidateQueries(["mychatWithUser",selectedChat._id])
+  }
+})
+
+const sendingMessageHandler=(e)=>{
+if(e.keyCode===13){
+
+sendMessagemutation.mutate({chatid:selectedChat._id,to:getSenderId(user,selectedChat.participants), text:inputRef.current.value})
+
+
+}
+}
 
 
   return (
     <div className="main__chatcontent">
         <div className="content__header">
           <div className="blocks">
-            <div className="current-chatting-user">
-              <Avatar
+            <div className="current-chatting-user"   >
+            <MyLink to={`/profile/${getSenderId(user,selectedChat.participants)}`} >  <Avatar
                 isOnline="active"
-                image="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTA78Na63ws7B7EAWYgTr9BxhX_Z8oLa1nvOA&usqp=CAU"
+               image={getPhoto(user,selectedChat.participants)}
               />
-              <p>Tim Hover</p>
+              </MyLink>
+              <p>{getSender(user,selectedChat.participants)}</p>
             </div>
           </div>
 
@@ -95,9 +104,10 @@ const   chat= [
             <div className="headerIcon">
             
               <div className="first" >
-              <Phone size={50} weight="thin" />
-              <VideoCamera size={50} weight="thin" />
-              <MagnifyingGlass size={50} weight="thin" />
+                         <div>  <Phone size={25} weight="thin" /></div>
+            
+                         <div> <VideoCamera size={25} weight="thin" /></div>
+                         <div>  <MagnifyingGlass size={25} weight="thin" /></div>
               </div>
              <div>
              <CaretDown size={32} weight="thin" />
@@ -109,14 +119,12 @@ const   chat= [
         </div>
         <div className="content__body">
           <div className="chat__items">
-            { chat.map((itm, index) => {
+            {MyMessage && MyMessage.messages.map((itm, index) => {
               return (
                 <ChatItem
                   animationDelay={index + 2}
-                  key={itm.key}
-                  user={itm.type ? itm.type : "me"}
-                  msg={itm.msg}
-                  image={itm.image}
+                  message={itm}
+                  user={user}
                 />
               );
             })}
@@ -131,10 +139,12 @@ const   chat= [
             <input
               type="text"
               placeholder="Type a message here"
+              ref={inputRef}
+              onKeyDown={sendingMessageHandler}
             
             />
               <Smiley size={32} weight="thin" />
-            <button className="btnSendMsg" id="sendMsgBtn">
+            <button className="btnSendMsg" id="sendMsgBtn"  onClick={()=>{sendMessagemutation.mutate({chatid:selectedChat._id,to:getSenderId(user,selectedChat.participants), text:inputRef.current.value})}}   >
           
             <PaperPlaneTilt size={32} weight="thin" />
             </button>

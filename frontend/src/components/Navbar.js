@@ -4,7 +4,8 @@ import "./Navbar.css";
 import { Link } from "react-router-dom";
 import { LoginContext } from "../context/LoginContext";
 import { useSelector } from "react-redux";
-import { InstagramLogo } from "@phosphor-icons/react";
+import { House, InstagramLogo, MessengerLogo, PlusCircle, User } from "@phosphor-icons/react";
+import reel from "../img/video.png"
 
 export default function Navbar() {
 
@@ -16,16 +17,16 @@ const {isLoggedIn,token,user}=useSelector(state=>state.auth)
     if (isLoggedIn || token) {
       return [
         <>
-        <Link style={{ marginLeft: "20px" ,marginTop:"15px" }} to="/">
-           Home
+        <Link style={{ marginLeft: "20px"  }} to="/">
+        <House size={32} weight="fill" />
           </Link>
           <Link to={`/profile/${user._id}`}>
-            <li>Profile</li>
+          <User size={32} />
           </Link>
-          <Link style={{marginRight:"10px"}} to="/createPost">Create Post</Link>
+          <Link style={{marginRight:"10px"}} to="/createPost"><PlusCircle size={32} /></Link>
 
-          <Link style={{marginLeft:"12px"}}    to="/reel">Reel</Link>
-          <Link style={{marginLeft:"12px"}}    to="/message">Message</Link>
+          <Link style={{marginLeft:"12px"}}    to="/reel"><img width={28} height={28}   src={reel}/></Link>
+          <Link style={{marginLeft:"12px"}}    to="/message"><MessengerLogo size={32} /></Link>
           <Link to={""}>
             <button className="primaryBtn" onClick={() => setModalOpen(true)}>
               Log Out

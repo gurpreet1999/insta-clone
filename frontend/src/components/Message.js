@@ -4,8 +4,11 @@ import MyChat from './MyChat'
 import ChatBox from './ChatBox'
 import {Box} from "@chakra-ui/layout"
 import "./message.css"
-import { House, InstagramLogo, User } from '@phosphor-icons/react'
+import { House, InstagramLogo, User, MagnifyingGlass,  } from '@phosphor-icons/react'
 import Avatar from './Avatar'
+import reel from "../img/video.png"
+import {Link } from "react-router-dom"
+
 
 const Message = () => {
   const {user}=useSelector(state=>state.auth)
@@ -24,13 +27,16 @@ const Message = () => {
     
       
        
-        
-         <House size={32} />  
-        <User size={32} weight="light"  />
+        <Link to={"/"}> <House size={32} /> </Link>
+         
+        <Link to={`/profile/${user._id}`}  >  <User size={32} weight="light"  /></Link>
+      
+        <Link to={"/reel"} ><img width={28} height={28}   src={reel}/></Link> 
+        <Link to={""} ><MagnifyingGlass size={32} weight="thin" /></Link> 
       
         </div>
         <div className="">
-        <Avatar/>
+        <Avatar image={user.photo}  />
         </div>
       </div>
       <div className="main-chatbody">

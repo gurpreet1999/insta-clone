@@ -58,7 +58,7 @@
   }
 
   .main__chatlist {
-    background-color: #f4f3f8;
+    background-color: rgb(255, 223, 228);
     width: 25%;
     border-right: 2px solid #262626;
     padding:20px;
@@ -205,7 +205,7 @@ height: 70%;
   }
   .chatlist__item:hover,
   .chatlist__item.active {
-    background: #fff;
+    background:#d4e7ff ;
   
     border-radius: 10px;
   }
@@ -239,7 +239,7 @@ height: 70%;
   }
   .content__header {
     
-    background-color: #f4f3f8;
+    background-color: rgb(255, 223, 228);
   padding-left:15px;
     border-bottom: 1px solid #ebe7fb;
   }
@@ -255,26 +255,33 @@ height: 70%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 10px;
   }
   .settings .btn-nobg {
     color: #000;
   }
   .content__body {
-    max-height:75%;
-    overflow: auto;
+    padding: 12px;
+  height:84%;
+    overflow:auto;
   }
   .headerIcon{
-    width: 30%;
+   
+    width: 15%;
     display:flex;
     justify-content:space-between;
     align-items: center;
     gap: 15px;
+
+   
   }
   .first{
-
+display: flex;
+gap: 17px;
   }
 
   .chat__item {
+
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
@@ -310,12 +317,12 @@ height: 70%;
     padding: 1px;
   }
   .chat__item__content {
-    background-color: #4462ff;
-    color: #fff;
-    padding: 15px;
-    border-radius: 10px 10px 0 10px;
-    max-width: 50%;
-    min-width: 215px;
+    background-color: #ffc6e3;
+    color: #000000;
+    padding:10px;
+    border-radius: 14px 20px 0 14px;
+    
+    
   }
   .chat__item__content .chat__meta {
     justify-content: space-between;
@@ -338,8 +345,8 @@ height: 70%;
   .chat__item.other .chat__item__content {
     background-color: #fff;
     color: #000;
-    border-radius: 10px 10px 10px 0;
-    max-width: 50%;
+    border-radius: 14px 14px 14px 0;
+  
   }
   .chat__item.other .avatar {
     margin-right: 20px;
@@ -348,15 +355,14 @@ height: 70%;
   .chat__item.other .chat__item__content .chat__meta span {
     color: #d1d1d1;
   }
-  .content__footer {
-    padding-top: 30px;
-  }
+ 
   .sendNewMessage {
     background-color: #fff;
     display: flex;
     justify-content: space-between;
     padding: 10px;
     border-radius: 8px;
+    
   }
   .sendNewMessage button {
     width: 36px;
@@ -372,6 +378,7 @@ height: 70%;
     border-radius: 5px;
     line-height: 36px;
     transition: all 0.3s cubic-bezier(0.88, 0.19, 0.37, 1.11);
+    margin-left: 10px;
   }
   .sendNewMessage button:hover {
     transform: scale(1.2);
