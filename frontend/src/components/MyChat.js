@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Stack, Text } from "@chakra-ui/layout";
 import ChatLoading from "./ChatLoading";
 import { useDispatch, useSelector } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery,useQueryClient} from "@tanstack/react-query";
 import { getPhoto, getSender, getSenderId, getTimeStamp } from "./chatLogic";
 import { selectTheChat } from "../redux/slice/chatSlice";
 import axios from "axios";
@@ -11,11 +11,32 @@ import { ArchiveBox, CircleDashed, MagnifyingGlass } from "@phosphor-icons/react
 
 
 
-const ChatListItems=({participants,message,animationDelay,user,selectedChat,chat})=>{
 
+const ChatListItems=({participants,message,animationDelay,user,selectedChat,chat,itemsRef,token })=>{
+
+  const notificationmessage=""
   const dispatch=useDispatch()
+
+
+
+  const selectTheChatAndRemoveNotification=async()=>{
+    dispatch(selectTheChat(chat))
+
+    const div1=itemsRef.current[getSenderId(user,chat.participants)]
+    div1.lastChild.innerText=""
+    if(div1.firstChild.class)
+    await axios.post("http://localhost:5000/deletenotification",{chatid:chat._id},{
+  headers:{
+    Authorization:"Bearer " + token
+  }
+
+
+})
+    
+  }
+
     return (
-        <div onClick={()=>{dispatch(selectTheChat(chat))}}
+        <div onClick={selectTheChatAndRemoveNotification}
         style={{ animationDelay:`0.${animationDelay}s` }}
      
         className={`chatlist__item ${
@@ -29,9 +50,11 @@ const ChatListItems=({participants,message,animationDelay,user,selectedChat,chat
         
         />
 
-        <div className="userMeta">
+        <div className="userMeta"  ref={el => itemsRef.current[getSenderId(user,participants)] = el}   >
           <p>{getSender(user,participants)}</p>
-          <span className="activeTime">""</span>
+         {chat.notification.length>0 && user._id===chat.notification[0].receiverId?<span className="activeTime1">{chat.notification[0].text}</span>:<span className="activeTime" >{chat.messages[chat.messages.length-1]?.text}</span>
+}
+<span className="activeTimeClone" ></span>
         </div>
       </div>
     )
@@ -45,11 +68,18 @@ const ChatListItems=({participants,message,animationDelay,user,selectedChat,chat
 
 
 
-const MyChat = () => {
+const MyChat = ({socket}) => {
+  const itemsRef = useRef([]);
+
+  const [messageNotification,setMessageNotification]=useState("")
+
+  const isOnline=false
+  const queryclient=useQueryClient()
 
   const [chatWithUser,setChatWithUser]=useState([])
 
 const {token,user}=useSelector(state=>state.auth)
+
 
 const {selectedChat}=useSelector(state=>state.chat)
 
@@ -62,12 +92,15 @@ const {data}=await axios.get("http://localhost:5000/fetchchat",{
   }
 })
 
+
 return data
 }
 
 const {data:allchats}=useQuery(["allchatWithUser"],fetchAllChat,{
   onSuccess:(data)=>{
+    
 setChatWithUser(data)
+itemsRef.current = itemsRef.current.slice(0, data.length);
   }
 })
 
@@ -88,6 +121,54 @@ const searchChat=(e)=>{
 }
 
 
+useEffect(()=>{
+  if(socket){
+    socket.on("getMessageToSpecific", (data) => {
+    if(data.chatid===selectedChat._id){
+        
+        queryclient.invalidateQueries(["mychatWithUser",selectedChat._id])
+      }
+      else{
+  
+setMessageNotification(data)
+      }
+  
+    });
+  }
+ 
+
+
+
+},[socket])
+
+
+useEffect(()=>{
+
+if(messageNotification){
+  const notifieduUser=allchats.find((elem)=>{
+   const sender= getSenderId(user,elem.participants)
+   if(sender===messageNotification.senderId){
+    
+    return elem
+   }
+
+
+
+
+  })
+
+
+  
+  const div1=itemsRef.current[getSenderId(user,notifieduUser.participants)]
+
+ div1.lastChild.innerText=messageNotification.text
+
+  
+}
+
+
+
+},[messageNotification])
 
   return (
 
@@ -124,7 +205,9 @@ const searchChat=(e)=>{
               user={user}
               selectedChat={selectedChat}
               chat={item}
-               
+              itemsRef={itemsRef}
+              setMessageNotification={setMessageNotification}
+              token={token}
               />
             );
           })}

@@ -195,14 +195,34 @@ height: 70%;
     font-weight: 600;
     font-size: 14px;
   }
-  .chatlist__item .userMeta span {
+  .chatlist__item .activeTime {
     margin: 0;
     padding: 0;
     color: #ceccd3;
     font-weight: 400;
     font-size: 12px;
     display: block;
+    position: relative;
   }
+  .chatlist__item .activeTime1 {
+    margin: 0;
+    padding: 0;
+    color:black;
+    font-weight:900;
+    font-size: 12px;
+    display: block;
+    position: relative;
+  }
+  .chatlist__item .activeTimeClone{
+position: absolute;
+
+background:white;
+top: 29px;
+left: 75px;
+  }
+
+
+
   .chatlist__item:hover,
   .chatlist__item.active {
     background:#d4e7ff ;

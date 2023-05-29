@@ -53,7 +53,7 @@ else{
 
  router.post("/signup",(req,res)=>{
    const {name,userName,email,password}=req.body
-   console.log(name,userName,email,password)
+  
  
  if(!name || !email || !password || !userName){
     return  res.status(422).json({error:"pls add all the field"})

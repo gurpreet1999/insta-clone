@@ -1,5 +1,5 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useContext, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import MyChat from './MyChat'
 import ChatBox from './ChatBox'
 import {Box} from "@chakra-ui/layout"
@@ -9,11 +9,23 @@ import Avatar from './Avatar'
 import reel from "../img/video.png"
 import {Link } from "react-router-dom"
 
+import CallNotification from './CallNotification'
+
+import { SocketContext } from '../context/SocketContext'
+
+
 
 const Message = () => {
+
+ 
   const {user}=useSelector(state=>state.auth)
 
+  const socket=useContext(SocketContext)
+
+
+
   return (
+    <>
     <div  className='main'> 
        <div className="nav">
 
@@ -40,8 +52,8 @@ const Message = () => {
         </div>
       </div>
       <div className="main-chatbody">
-<MyChat/>
-<ChatBox/>
+<MyChat socket={socket}  />
+<ChatBox socket={socket}  />
 
 
 
@@ -49,6 +61,9 @@ const Message = () => {
   
 
 </div>
+
+
+</>
   )
 }
 

@@ -19,7 +19,7 @@ export const getSender = (loggedUser, users) => {
 };
 export const getSenderId = (loggedUser, users) => {
   
-  return users[0]._id === loggedUser._id ? users[1]._id : users[0]._id;
+  return  users.length>0 &&  users[0]._id === loggedUser._id ? users[1]._id : users[0]._id;
 };
 export const getPhoto = (loggedUser, users) => {
   return users[0]._id === loggedUser._id ? users[1].photo : users[0].photo;

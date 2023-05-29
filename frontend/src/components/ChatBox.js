@@ -1,13 +1,13 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@chakra-ui/layout";
 import SingleChat from "./SingleChat";
 import { useSelector } from "react-redux";
 import Avatar from "./Avatar";
-import { CaretDown,Link, MagnifyingGlass, PaperPlaneTilt, Phone, Smiley, VideoCamera } from "@phosphor-icons/react";
+import { CaretDown, MagnifyingGlass, PaperPlaneTilt, Phone, Smiley, VideoCamera } from "@phosphor-icons/react";
 import {useQuery,useMutation,useQueryClient} from "@tanstack/react-query"
 import axios from "axios";
 import { getPhoto, getSender, getSenderFull, getSenderId, photo } from "./chatLogic";
-import {Link as MyLink} from "react-router-dom"
+import {Link , useNavigate} from "react-router-dom"
 
 const ChatItem=({message,user})=>{
     return (
@@ -26,9 +26,11 @@ const ChatItem=({message,user})=>{
 
 
 
-const ChatBox = () => {
+const ChatBox = ({socket}) => {
 
   const inputRef=useRef()
+
+
 
   const queryclient=useQueryClient()
 
@@ -58,13 +60,23 @@ const sendmessage=async(chat)=>{
     console.log("no text")
     return
   }
-  inputRef.current.value=""
+  
   console.log(chat)
- return  await axios.post("http://localhost:5000/sendmessage",chat,{
+  await axios.post("http://localhost:5000/sendmessage",chat,{
 headers:{
   Authorization:"Bearer " + token
 }
 })
+socket.emit("sendMessage",{
+  senderId: user._id,
+  receiverId:getSenderId(user,selectedChat.participants),
+  text:inputRef.current.value,
+  chatid:selectedChat._id
+})
+
+inputRef.current.value=""
+
+return;
 
 }
 
@@ -73,6 +85,7 @@ const sendMessagemutation=useMutation(sendmessage,{
   onSuccess:(data)=>{
 
 queryclient.invalidateQueries(["mychatWithUser",selectedChat._id])
+queryclient.invalidateQueries(["allchatWithUser"])
   }
 })
 
@@ -82,20 +95,25 @@ if(e.keyCode===13){
 sendMessagemutation.mutate({chatid:selectedChat._id,to:getSenderId(user,selectedChat.participants), text:inputRef.current.value})
 
 
+
 }
 }
 
+const navigate=useNavigate()
 
   return (
-    <div className="main__chatcontent">
+<>
+{
+ Object.keys(selectedChat).length !== 0 ?(
+<div className="main__chatcontent">
         <div className="content__header">
           <div className="blocks">
             <div className="current-chatting-user"   >
-            <MyLink to={`/profile/${getSenderId(user,selectedChat.participants)}`} >  <Avatar
+            <Link to={`/profile/${getSenderId(user,selectedChat.participants)}`} >  <Avatar
                 isOnline="active"
                image={getPhoto(user,selectedChat.participants)}
               />
-              </MyLink>
+              </Link>
               <p>{getSender(user,selectedChat.participants)}</p>
             </div>
           </div>
@@ -106,7 +124,7 @@ sendMessagemutation.mutate({chatid:selectedChat._id,to:getSenderId(user,selected
               <div className="first" >
                          <div>  <Phone size={25} weight="thin" /></div>
             
-                         <div> <VideoCamera size={25} weight="thin" /></div>
+                        <Link to="/insta/videocall"  ><div> <VideoCamera size={25} weight="thin"  /></div></Link> 
                          <div>  <MagnifyingGlass size={25} weight="thin" /></div>
               </div>
              <div>
@@ -134,7 +152,7 @@ sendMessagemutation.mutate({chatid:selectedChat._id,to:getSenderId(user,selected
         <div className="content__footer">
           <div className="sendNewMessage">
             <button className="addFiles">
-            <Link size={32} weight="thin" />
+            {/* <Link size={32} weight="thin" /> */}
             </button>
             <input
               type="text"
@@ -151,6 +169,18 @@ sendMessagemutation.mutate({chatid:selectedChat._id,to:getSenderId(user,selected
           </div>
         </div>
       </div>
+):(
+<div>
+<div className="main__chatcontent">
+  please selectt the chat
+  </div>
+</div>
+)
+}
+
+</>
+   
+    
   );
 };
 

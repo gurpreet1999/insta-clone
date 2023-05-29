@@ -12,7 +12,7 @@
        }
 
  const token=authorization.replace("Bearer ","")
- console.log(token)
+ 
  jwt.verify(token,key,(err,paylod)=>{
     if(err){
        return res.status(422).json({error:"u must have logged in"})
@@ -26,7 +26,7 @@ USER.findById(_id).then((userdata)=>{
 
     
      next()
- console.log(userdata)
+ 
 })
 
  })

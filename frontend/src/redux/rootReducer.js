@@ -8,7 +8,8 @@ import chatReducer from "./slice/chatSlice";
 
 const rootReducer=combineReducers({
     auth:authReducer,
-    chat:chatReducer
+    chat:chatReducer,
+    
 })
 
 export default rootReducer

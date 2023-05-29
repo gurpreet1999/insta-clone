@@ -78,6 +78,18 @@ return res.send(chat)
 
 })
 
+chatrouter.post("/deletenotification", requirelogin, async (req, res, next) => {
+
+  const {chatid}=req.body;
+
+  const chat=await CHAT.findOne({_id:chatid})
+  chat.notification=[]
+  chat.save()
+
+})
+
+
+
 chatrouter.post("/allmessage", requirelogin, async (req, res, next) => {
 
 const {chatid}=req.body

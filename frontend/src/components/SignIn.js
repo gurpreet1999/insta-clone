@@ -109,17 +109,17 @@ const mutation=useMutation(loginUser,{
   return (
     <div className='signin'>
 
-        <div>
+    <div>
 <div className='loginform'>
 <img className='signuplogo'  src={download}/>
 <div>
-    <input type='email' name='email' id="email" placeholder='email' value={email} onChange={(e)=>setemail(e.target.value)}>
-    </input>
+<input type='email' name='email' id="email" placeholder='email' value={email} onChange={(e)=>setemail(e.target.value)}>
+</input>
 
 </div>
 <div>
-    <input type='password' name='password' id="password" placeholder='Password' value={password} onChange={(e)=>setpassword(e.target.value)}>
-    </input>
+<input type='password' name='password' id="password" placeholder='Password' value={password} onChange={(e)=>setpassword(e.target.value)}>
+</input>
 
 </div>
 <input type="submit" id="submit2" onClick={()=>{mutation.mutate({email,password})}}     value="Sign In"/>
@@ -132,17 +132,17 @@ const mutation=useMutation(loginUser,{
 </div>
 
 <div className='form2' style={{textTransform:"capitalize"}} >
-    dont have an account?
-    <Link to='/signup'>   <span style={{color:"#4c68d7", fontWeight:"bold"}}>sign up</span></Link>
- 
+dont have an account?
+<Link to='/signup'>   <span style={{color:"#4c68d7", fontWeight:"bold"}}>sign up</span></Link>
+
 </div>
 
-        </div>
-
-
-
     </div>
-  )
+
+
+
+</div>
+)
 }
 
 export default SignIn

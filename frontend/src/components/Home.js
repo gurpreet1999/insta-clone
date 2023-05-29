@@ -1,14 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useMutation, useQuery,useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
+import { SocketContext } from "../context/SocketContext";
 
-export default function Home() {
+export default function Home({SetcallingNotificationModal}) {
+
+  const [online,setOnline]=useState("")
+  
+
+  
+ 
+  const socket=useContext(SocketContext)
+
+  useEffect(()=>{
+    if(socket){
+      socket.emit("addUser", user._id);
+      socket.on("getUsers",(users) => {
+        setOnline(users)
+        }
+        )
+    }
+    
+  
+  
+  
+  },[socket])
+  
+
+
+
+  useEffect(()=>{
+
+    if(socket){
+  console.log("seeeee here")
+  
+      socket.on("incomming:call",({from,offer})=>{
+        console.log("incoming Request")
+      
+        SetcallingNotificationModal(true)
+      })
+    }
+  },[socket])
+  
+
+
+
+
   var picLink = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"
 
   const {token,user}=useSelector(state=>state.auth)

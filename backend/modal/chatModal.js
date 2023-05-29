@@ -28,6 +28,22 @@ const chatSchema = new mongoose.Schema({
      
     },
   ],
+
+  notification:[
+{
+  senderId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "USER",
+  },
+  receiverId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "USER",
+  },
+ text:{
+  type: String,
+ }
+}
+  ]
 });
 
 const CHAT = new mongoose.model(
