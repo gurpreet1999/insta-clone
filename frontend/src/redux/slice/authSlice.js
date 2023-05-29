@@ -4,7 +4,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState={
 isLoggedIn:false,
 user:null,
-token:null
+token:null,
+offerForVideoCall:null
 }
 
 const slice=createSlice({
@@ -30,10 +31,16 @@ token:null
 
 },
 
+saveOffer(state,action){
+  return {
+...state,
+offerForVideoCall:action.payload
+  }
+}
     }
 
 })
 
-export const {logIn,logOut}= slice.actions
+export const {logIn,logOut,saveOffer}= slice.actions
 
 export default slice.reducer

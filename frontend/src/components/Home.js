@@ -8,8 +8,9 @@ import { useMutation, useQuery,useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 import { SocketContext } from "../context/SocketContext";
+import { saveOffer } from "../redux/slice/authSlice";
 
-export default function Home({SetcallingNotificationModal}) {
+export default function Home({SetcallingNotificationModal,setOffer}) {
 
   const [online,setOnline]=useState("")
   
@@ -43,7 +44,9 @@ export default function Home({SetcallingNotificationModal}) {
       socket.on("incomming:call",({from,offer})=>{
         console.log("incoming Request")
       
+        setOffer({offer,from})
         SetcallingNotificationModal(true)
+
       })
     }
   },[socket])

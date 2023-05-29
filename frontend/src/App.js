@@ -37,7 +37,7 @@ const {user}=useSelector(state=>state.auth)
 
  
 
- 
+ const [Offer,setOffer]=useState({})
   
 
   
@@ -72,7 +72,7 @@ console.log(location)
           } */}
         
           <Routes>
-            <Route path="/" element={<Home SetcallingNotificationModal={SetcallingNotificationModal}   />}></Route>
+            <Route path="/" element={<Home SetcallingNotificationModal={SetcallingNotificationModal}  setOffer={setOffer} />}></Route>
             <Route path="/signup" element={<SignUp />}></Route>
             <Route path="/signin" element={<SignIn />}></Route>
             <Route path="/reel" element={<Reel/>}></Route>
@@ -88,7 +88,7 @@ console.log(location)
           <ToastContainer theme="dark" />
 
           {modalOpen && <Modal setModalOpen={setModalOpen}></Modal>}
-          {callingNotificationModal && <CallNotification SetcallingNotificationModal={SetcallingNotificationModal}   callingNotificationModal={callingNotificationModal} ></CallNotification>}
+          {callingNotificationModal && <CallNotification  Offer={Offer}  SetcallingNotificationModal={SetcallingNotificationModal}   callingNotificationModal={callingNotificationModal} ></CallNotification>}
    
 
         </LoginContext.Provider>
