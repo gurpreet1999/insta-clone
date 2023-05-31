@@ -20,6 +20,10 @@ const chatSchema = new mongoose.Schema({
       text: {
         type: String,
       },
+      status : {
+        type : String,
+        default :'unseen'
+    },
       created_at: {
         type: Date,
         default: Date.now(),

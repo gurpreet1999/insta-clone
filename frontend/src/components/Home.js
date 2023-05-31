@@ -6,49 +6,59 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useMutation, useQuery,useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { socket, connectSocket } from "../socket"
 
 import { SocketContext } from "../context/SocketContext";
 import { saveOffer } from "../redux/slice/authSlice";
 
 export default function Home({SetcallingNotificationModal,setOffer}) {
-
+  const queryclient=useQueryClient()
   const [online,setOnline]=useState("")
   
-
+  const {token,user}=useSelector(state=>state.auth)
   
  
-  const socket=useContext(SocketContext)
+ 
 
   useEffect(()=>{
-    if(socket){
-      socket.emit("addUser", user._id);
-      socket.on("getUsers",(users) => {
-        setOnline(users)
-        }
-        )
+    if(!socket){
+      console.log("coonect hone ja raha he")
+      connectSocket(user._id)
     }
+       
+    socket.on("getUsers",({users})=>{
+   setOnline(users)
+    })
+  },[socket])
+    
     
   
   
-  
-  },[socket])
-  
 
 
 
   useEffect(()=>{
 
     if(socket){
-  console.log("seeeee here")
   
-      socket.on("incomming:call",({from,offer})=>{
+  
+      socket.on("incomming:call",({from,offer,chatId})=>{
         console.log("incoming Request")
       
-        setOffer({offer,from})
+        setOffer({offer,from,chatId})
         SetcallingNotificationModal(true)
 
       })
+
+      socket.on("postLikedBy",({mynotification})=>{
+        queryclient.invalidateQueries("insta-post")
+        console.log(mynotification)
+
+      })
     }
+
+
+
   },[socket])
   
 
@@ -57,7 +67,7 @@ export default function Home({SetcallingNotificationModal,setOffer}) {
 
   var picLink = "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"
 
-  const {token,user}=useSelector(state=>state.auth)
+  
 
   const navigate = useNavigate();
   // const [data, setData] = useState([]);
@@ -123,15 +133,21 @@ headers:{
 
 
   
-const likePost=async(user)=>{
-  return await axios.put("http://localhost:5000/like",
-  user,{
+const likePost=async(post)=>{
+   await axios.put("http://localhost:5000/like",
+  {postid:post._id},{
     headers:{
       Authorization:"Bearer " + token
     }
   }
   )
+
+  socket.emit("likedPost",{sender:user._id,receiver:post.postedby,type:"like"})
+
+
 }
+
+
 
 
 const unlikePost=async(user)=>{
@@ -157,7 +173,7 @@ const unlikePost=async(user)=>{
 
 const {data,isLoading,isError}=useQuery(["insta-post"],fetchpost)
 
-const queryclient=useQueryClient()
+
 const mutation=useMutation(likePost,{
 onSuccess:()=>{
   queryclient.invalidateQueries("insta-post")
@@ -223,7 +239,7 @@ const commentMutation=useMutation(commentOnPost,{
                 <span
                   className="material-symbols-outlined"
                   onClick={() => {
-                    mutation.mutate({postid:posts._id});
+                    mutation.mutate(posts);
                   }}
                 >
                   favorite

@@ -6,6 +6,8 @@ const { Server } = require("socket.io");
 
 const mongourl=require("./key");
 const CHAT = require('./modal/chatModal');
+const NOTIFICTION = require('./modal/notificationModal');
+const { executionAsyncResource } = require('async_hooks');
 
 
 
@@ -59,30 +61,63 @@ app.use(express.json())
  };
  
  const getUser = (userId) => {
-   return users.find((user) => user.userId === userId);
+   return users.find((user) => user.userId == userId);
  };
 
 
 
 io.on("connection",(socket)=>{
-    // console.log("hii this is socket-", socket.id)
-    socket.on("addUser", (userId) => {
-      console.log(userId)
-        addUser(userId, socket.id);
-        io.emit("getUsers", users);
-        console.log(users)
-      });
+  console.log(JSON.stringify(socket.handshake.query));
+  const user_id = socket.handshake.query["user_id"];
+  console.log("bhai",user_id)
+  if (user_id != null && Boolean(user_id)) {
+
+    addUser(user_id, socket.id);
+    io.emit("getUsers", users);
+    console.log(users)
+  }
+
+
+
+    // socket.on("addUser", (userId) => {
+    //   console.log(userId)
+    //     addUser(userId, socket.id);
+    //     io.emit("getUsers", users);
+       
+    //   });
 
       
-     socket.on("user:call", ({ to, offer ,from}) => {
+     socket.on("user:call", ({ to, offer ,from,chatId}) => {
          const user = getUser(to);
-         console.log(to)
+         console.log( "bhai",  to)
          if(user){
-          io.to(user.socketId).emit("incomming:call", { from, offer });
+          io.to(user.socketId).emit("incomming:call", { from, offer ,chatId});
          }
         
       });
 
+      socket.on("call:accepted", ({to,ans,from }) => {
+        console.log("ye lo user",   users)
+        console.log(  "kaisa he" ,  to)
+        const user=getUser(to);
+        console.log( "error", user)
+       if(user){
+        io.to(user.socketId).emit("call:accepted", { from:from, ans });
+       }
+      
+      });
+
+      socket.on("peer:nego:needed", ({ to, offer ,from}) => {
+        const user=getUser(to);
+        console.log("peer:nego:needed", offer);
+        io.to(user.socketId).emit("peer:nego:needed", { from:from, offer });
+      });
+    
+      socket.on("peer:nego:done", ({ to, ans ,from}) => {
+        console.log("peer:nego:done", ans);
+        const user=getUser(to);
+        io.to(user.socketId).emit("peer:nego:final", { from:from, ans });
+      });
 
 
 socket.on("sendMessage",async({senderId,receiverId,text,chatid})=>{
@@ -119,7 +154,31 @@ console.log(chat)
 })
 
 
+socket.on("likedPost",async({sender,receiver,type})=>{
 
+
+  const notification={
+    sender:sender,
+    receiver:receiver._id,
+    type:type
+  }
+const mynotification=await NOTIFICTION.create(notification).then((t)=>t.populate("sender"))
+
+
+
+
+console.log("here reachingh")
+console.log(receiver)
+const user=getUser(receiver._id);
+
+console.log(user)
+if(user){
+  io.to(user.socketId).emit("postLikedBy",{mynotification})
+}
+
+
+
+})
 
 
 
@@ -127,7 +186,7 @@ console.log(chat)
 
 
 socket.on("disconnect",()=>{
-  // console.log("a user disconnected!");
+  console.log("a user disconnected!");
   removeUser(socket.id);
   io.emit("getUsers", users);
 })

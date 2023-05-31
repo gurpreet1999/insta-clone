@@ -4,6 +4,7 @@ import "./CallNotification.css"
 import { RiCloseLine } from 'react-icons/ri';
 import { VideoCamera, X } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
+import { selectTheChat } from '../redux/slice/chatSlice';
 
 const CallNotification = ({SetcallingNotificationModal,Offer}) => {
 
@@ -34,6 +35,7 @@ const navigate=useNavigate()
 <div  className='iconOfVideoCall' style={{background:"#ff3e4e"}}  onClick={()=>{SetcallingNotificationModal(false)}}  ><X style={{fontWeight:"900"}}   size={28} color="#fdfcfc" weight="thin" /></div>
 <div  className='iconOfVideoCall' style={{background:"#75bf32"}} ><VideoCamera  onClick={()=>{
   SetcallingNotificationModal(false)
+  selectTheChat(Offer.chatId)
   navigate("/insta/videocall" ,{
     state: {
       Offer

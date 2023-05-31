@@ -13,7 +13,9 @@ const VideoCallComponent = () => {
   const socket=useContext(SocketContext)
 
   const location=useLocation()
-  console.log(location)
+ const offer=location.state?.Offer
+
+
   
 
  
@@ -94,9 +96,16 @@ const unMuteVideo=()=>{
 }
 </div>
 </div>
-<p className='readyToCall'  >Ready to call?</p>
+<p className='readyToCall'  >{offer?"Ready to join?":"Ready to call?"}</p>
 <div className='callButton'>
-   <Link  to={"/callingrecipient"} ><button className='startCall'   >Start call</button></Link> 
+    <button className='startCall' onClick={()=>{
+      navigate("/callingrecipient",{
+        state: {
+          offer
+        }
+      })
+
+    }}    >{offer?"Join call":"Start call"}</button>
 </div>
 </div>
 
