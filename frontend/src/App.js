@@ -20,6 +20,8 @@ import VideoCallComponent from "./components/VideoCallComponent";
 import CallingRecipient from "./components/CallingRecipient";
 import CallNotification from "./components/CallNotification";
 import { useDispatch, useSelector } from "react-redux";
+import CustomNotification from "./components/Notification";
+import CreatePostModal from "./components/CreatePostModal";
 
 
 
@@ -82,7 +84,12 @@ console.log(location)
             <Route path="/profile/:userid" element={<UserProfie />}></Route>
             <Route path="/insta/videocall" element={<VideoCallComponent />}></Route>
             <Route path="/callingrecipient" element={<CallingRecipient />}></Route>
+            <Route path="/noti" element={<CustomNotification />}></Route>
             <Route path="/modal" element={<CallNotification />}></Route>
+            <Route path="/postt" element={<CreatePostModal />}></Route>
+            
+            
+
            
           </Routes>
           <ToastContainer theme="dark" />

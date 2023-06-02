@@ -100,5 +100,26 @@ return res.send(allMessage)
 
 })
 
+chatrouter.post("/seethemessage", requirelogin, async (req, res, next) => {
+
+const {chatid}=req.body;
+console.log(chatid)
+
+const chat=await CHAT.updateOne({
+  _id:chatid
+},{
+  $set:{
+    'messages.$[].status':"seen"
+  }
+},{
+  new:true
+})
+
+
+res.status(200).json(chat)
+
+})
+
+
 
 module.exports = chatrouter;

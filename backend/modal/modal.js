@@ -7,7 +7,7 @@ const userSchema= new mongoose.Schema({
    userName:{type:String,required:true},
    email:{type:String,required:true},
    password:{type:String,required:true},
-  followers:[{type:ObjectId,ref:"USER"}],
+   followers:[{ type:ObjectId, ref:"USER" }],
    following:[{type:ObjectId,ref:"USER"}],
   
 })

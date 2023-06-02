@@ -121,7 +121,11 @@ io.on("connection",(socket)=>{
 
 
 socket.on("sendMessage",async({senderId,receiverId,text,chatid})=>{
+
+  console.log('sec')
   const user = getUser(receiverId);
+  console.log(user)
+  console.log("selected" ,chatid)
 
   if(user){
   io.to(user.socketId).emit("getMessageToSpecific", {
@@ -130,28 +134,7 @@ socket.on("sendMessage",async({senderId,receiverId,text,chatid})=>{
       chatid
     });
   }
- else{
-let chat=await CHAT.findOne({_id:chatid})
-
-console.log(chat)
-chat.notification.push({
-  senderId:senderId,
-  receiverId:receiverId,
-  text:text
-
-
-
-})
-
-await chat.save()
-
-console.log(chat)
-
-
-
- }
- 
-})
+ })
 
 
 socket.on("likedPost",async({sender,receiver,type})=>{

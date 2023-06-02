@@ -418,3 +418,16 @@ gap: 17px;
     color: #fff;
   }
   
+
+
+
+  .unseenMessage{
+    font-size: 15px;
+    color: red;
+  }
+
+
+  .seenMessage{
+    font-size:8px;
+    color:green;
+  }

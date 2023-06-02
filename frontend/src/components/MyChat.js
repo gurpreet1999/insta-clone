@@ -3,35 +3,53 @@ import { Box, Stack, Text } from "@chakra-ui/layout";
 import ChatLoading from "./ChatLoading";
 import { useDispatch, useSelector } from "react-redux";
 import { useQuery,useQueryClient} from "@tanstack/react-query";
-import { getPhoto, getSender, getSenderId, getTimeStamp } from "./chatLogic";
+import { getPhoto, getSender, getSenderId, getTimeStamp,getUnseenMessage } from "./chatLogic";
 import { selectTheChat } from "../redux/slice/chatSlice";
 import axios from "axios";
 import Avatar from "./Avatar";
 import { ArchiveBox, CircleDashed, MagnifyingGlass } from "@phosphor-icons/react";
-
+import { socket, connectSocket } from "../socket"
 
 
 
 const ChatListItems=({participants,message,animationDelay,user,selectedChat,chat,itemsRef,token })=>{
 
+
+  
+  const queryclient=useQueryClient()
   const notificationmessage=""
   const dispatch=useDispatch()
 
 
 
   const selectTheChatAndRemoveNotification=async()=>{
-    dispatch(selectTheChat(chat))
 
-    const div1=itemsRef.current[getSenderId(user,chat.participants)]
-    div1.lastChild.innerText=""
-    if(div1.firstChild.class)
-    await axios.post("http://localhost:5000/deletenotification",{chatid:chat._id},{
+await axios.post("http://localhost:5000/seethemessage",{
+chatid:chat._id
+},{
   headers:{
     Authorization:"Bearer " + token
   }
-
-
 })
+
+     dispatch(selectTheChat(chat))
+     queryclient.invalidateQueries(["allchatWithUser"])
+
+
+
+
+
+
+  //   const div1=itemsRef.current[getSenderId(user,chat.participants)]
+  //   div1.lastChild.innerText=""
+  //   if(div1.firstChild.class)
+  //   await axios.post("http://localhost:5000/deletenotification",{chatid:chat._id},{
+  // headers:{
+  //   Authorization:"Bearer " + token
+//   }
+
+
+// })
     
   }
 
@@ -52,9 +70,13 @@ const ChatListItems=({participants,message,animationDelay,user,selectedChat,chat
 
         <div className="userMeta"  ref={el => itemsRef.current[getSenderId(user,participants)] = el}   >
           <p>{getSender(user,participants)}</p>
-         {chat.notification.length>0 && user._id===chat.notification[0].receiverId?<span className="activeTime1">{chat.notification[0].text}</span>:<span className="activeTime" >{chat.messages[chat.messages.length-1]?.text}</span>
-}
-<span className="activeTimeClone" ></span>
+         {/* {chat.notification.length>0 && user._id===chat.notification[0].receiverId?<span className="activeTime1">{chat.notification[0].text}</span>:<span className="activeTime" >{chat.messages[chat.messages.length-1]?.text}</span>
+} */}
+{/* <span className="activeTimeClone" ></span> */}
+
+
+{ message && message[message.length-1]?.status==="unseen"?<>{message[message.length-1].from===user._id?<span className="seenMessage"  >{message[message.length-1]?.text}</span>:<span className="unseenMessage"  >{message[message.length-1]?.text}</span>}</>:(<span className="seenMessage"  >{message[message.length-1]?.text}</span>)}
+<span className="numberofUnseenMessage">{getUnseenMessage(message)}</span>
         </div>
       </div>
     )
@@ -68,7 +90,7 @@ const ChatListItems=({participants,message,animationDelay,user,selectedChat,chat
 
 
 
-const MyChat = ({socket}) => {
+const MyChat = () => {
   const itemsRef = useRef([]);
 
   const [messageNotification,setMessageNotification]=useState("")
@@ -100,7 +122,17 @@ const {data:allchats}=useQuery(["allchatWithUser"],fetchAllChat,{
   onSuccess:(data)=>{
     
 setChatWithUser(data)
-itemsRef.current = itemsRef.current.slice(0, data.length);
+
+// queryclient.setQueryData("allchatWithUser",(olddata)=>{
+
+  
+//   return {
+
+//   }
+// })
+// itemsRef.current = itemsRef.current.slice(0, data.length);
+
+
   }
 })
 
@@ -121,54 +153,56 @@ const searchChat=(e)=>{
 }
 
 
-useEffect(()=>{
-  if(socket){
-    socket.on("getMessageToSpecific", (data) => {
-    if(data.chatid===selectedChat._id){
+
+
+// useEffect(()=>{
+//   if(socket){
+//     socket.on("getMessageToSpecific", (data) => {
+//     if(data.chatid===selectedChat._id){
         
-        queryclient.invalidateQueries(["mychatWithUser",selectedChat._id])
-      }
-      else{
+//         queryclient.invalidateQueries(["mychatWithUser",selectedChat._id])
+//       }
+//       else{
   
-setMessageNotification(data)
-      }
+// setMessageNotification(data)
+//       }
   
-    });
-  }
+//     });
+//   }
  
 
 
 
-},[socket])
+// },[socket])
 
 
-useEffect(()=>{
+// useEffect(()=>{
 
-if(messageNotification){
-  const notifieduUser=allchats.find((elem)=>{
-   const sender= getSenderId(user,elem.participants)
-   if(sender===messageNotification.senderId){
+// if(messageNotification){
+//   const notifieduUser=allchats.find((elem)=>{
+//    const sender= getSenderId(user,elem.participants)
+//    if(sender===messageNotification.senderId){
     
-    return elem
-   }
+//     return elem
+//    }
 
 
 
 
-  })
+//   })
 
 
   
-  const div1=itemsRef.current[getSenderId(user,notifieduUser.participants)]
+//   const div1=itemsRef.current[getSenderId(user,notifieduUser.participants)]
 
- div1.lastChild.innerText=messageNotification.text
+//  div1.lastChild.innerText=messageNotification.text
 
   
-}
+// }
 
 
 
-},[messageNotification])
+// },[messageNotification])
 
   return (
 

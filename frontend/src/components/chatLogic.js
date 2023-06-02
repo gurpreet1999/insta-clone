@@ -65,3 +65,17 @@ export const calculateTop = (i) => {
     return `${second} sec ago`;
   }
 };
+
+
+
+export const getUnseenMessage=(messages)=>{
+  let count=0;
+messages.map((message)=>{
+  if(message?.status==="unseen"){
+    count++;
+  }
+})
+
+return count
+
+}

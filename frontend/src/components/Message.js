@@ -12,7 +12,7 @@ import {Link } from "react-router-dom"
 import CallNotification from './CallNotification'
 
 import { SocketContext } from '../context/SocketContext'
-
+import { socket, connectSocket } from "../socket"
 
 
 const Message = () => {
@@ -20,8 +20,17 @@ const Message = () => {
  
   const {user}=useSelector(state=>state.auth)
 
-  const socket=useContext(SocketContext)
-
+  
+  useEffect(()=>{
+    if(!socket){
+      console.log("coonect hone ja raha he")
+      connectSocket(user._id)
+    }
+       
+    socket.on("getUsers",({users})=>{
+  //  setOnline(users)
+    })
+  },[])
 
 
   return (
@@ -52,8 +61,8 @@ const Message = () => {
         </div>
       </div>
       <div className="main-chatbody">
-<MyChat socket={socket}  />
-<ChatBox socket={socket}  />
+<MyChat />
+<ChatBox   />
 
 
 
