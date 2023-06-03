@@ -2,28 +2,61 @@ import React, { useContext, useEffect, useRef } from 'react'
 import "./VideoCallComponent.css"
 import { Gear, Microphone, SpeakerLow, VideoCamera } from '@phosphor-icons/react'
 import { useSelector } from 'react-redux'
-import { getPhoto,getSender} from "./chatLogic";
+import { getPhoto,getSender, getSenderId} from "./chatLogic";
 import { useLocation, useNavigate,Link } from 'react-router-dom';
-import { SocketContext } from '../context/SocketContext';
+import { connectSocket, socket } from "../socket";
 
 
 const VideoCallComponent = () => {
 
-  
-  const socket=useContext(SocketContext)
+
+  const {token,user}=useSelector(state=>state.auth)
+  useEffect(() => {
+    connectSocket(user._id);
+  }, [user]);
+
+  const navigate=useNavigate()
+ 
 
   const location=useLocation()
  const offer=location.state?.Offer
 
 
-  
+  const callUser=()=>{
+    
+    const recieverId = getSenderId(user, selectedChat.participants);
+    socket.emit("room:join", {
+      to: recieverId,
+      from: user._id,
+      room:1
+     
+    });
 
+      navigate("/callingrecipient")
+
+    
+
+
+  }
+
+  const acceptCall=()=>{
+    console.log(offer)
+    socket.emit("room:join2", {
+   
+      to:offer.from,
+      from: user._id,
+      room:offer.room
+     
+    });
+
+    navigate("/callingrecipient")
+
+  }
  
-    const navigate=useNavigate()
 
     
   const {selectedChat}=useSelector(state=>state.chat)
-  const {token,user}=useSelector(state=>state.auth)
+
 
     let cameraStream;
     let videoRef=useRef()
@@ -98,14 +131,8 @@ const unMuteVideo=()=>{
 </div>
 <p className='readyToCall'  >{offer?"Ready to join?":"Ready to call?"}</p>
 <div className='callButton'>
-    <button className='startCall' onClick={()=>{
-      navigate("/callingrecipient",{
-        state: {
-          offer
-        }
-      })
-
-    }}    >{offer?"Join call":"Start call"}</button>
+  
+    {!offer?<button className='startCall' onClick={()=>{callUser()}}   >start call</button>: <button className='startCall' onClick={()=>{acceptCall()}}   >join call</button>}
 </div>
 </div>
 

@@ -87,37 +87,40 @@ io.on("connection",(socket)=>{
     //   });
 
       
-     socket.on("user:call", ({ to, offer ,from,chatId}) => {
-         const user = getUser(to);
-         console.log( "bhai",  to)
-         if(user){
-          io.to(user.socketId).emit("incomming:call", { from, offer ,chatId});
-         }
+     socket.on("room:join", ({ to ,from,room}) => {
         
-      });
+        //  console.log( "bhai",  to)
+         io.to(room).emit("user:joined", {  id: socket.id });
+         socket.join(room)
 
-      socket.on("call:accepted", ({to,ans,from }) => {
-        console.log("ye lo user",   users)
-        console.log(  "kaisa he" ,  to)
-        const user=getUser(to);
-        console.log( "error", user)
-       if(user){
-        io.to(user.socketId).emit("call:accepted", { from:from, ans });
-       }
-      
-      });
+         const user=getUser(to);
+         if(user){
+          io.to(user.socketId).emit("callingUser",{from:from,room:room});
+         }
+        });
+      socket.on("room:join2", ({ to ,from,room}) => {
+        io.to(room).emit("user:joined", {  id: socket.id });
+         socket.join(room)
+});
 
-      socket.on("peer:nego:needed", ({ to, offer ,from}) => {
-        const user=getUser(to);
-        console.log("peer:nego:needed", offer);
-        io.to(user.socketId).emit("peer:nego:needed", { from:from, offer });
-      });
-    
-      socket.on("peer:nego:done", ({ to, ans ,from}) => {
-        console.log("peer:nego:done", ans);
-        const user=getUser(to);
-        io.to(user.socketId).emit("peer:nego:final", { from:from, ans });
-      });
+socket.on("user:call", ({ to, offer }) => {
+  io.to(to).emit("incomming:call", { from: socket.id, offer });
+});
+
+socket.on("call:accepted", ({ to, ans }) => {
+  io.to(to).emit("call:accepted", { from: socket.id, ans });
+});
+
+
+socket.on("peer:nego:needed", ({ to, offer }) => {
+  console.log("peer:nego:needed", offer);
+  io.to(to).emit("peer:nego:needed", { from: socket.id, offer });
+});
+
+socket.on("peer:nego:done", ({ to, ans }) => {
+  console.log("peer:nego:done", ans);
+  io.to(to).emit("peer:nego:final", { from: socket.id, ans });
+});
 
 
 socket.on("sendMessage",async({senderId,receiverId,text,chatid})=>{

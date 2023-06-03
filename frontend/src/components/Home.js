@@ -42,10 +42,10 @@ export default function Home({SetcallingNotificationModal,setOffer}) {
     if(socket){
   
   
-      socket.on("incomming:call",({from,offer,chatId})=>{
+      socket.on("callingUser",({from,room})=>{
         console.log("incoming Request")
       
-        setOffer({offer,from,chatId})
+        setOffer({from,room})
         SetcallingNotificationModal(true)
 
       })

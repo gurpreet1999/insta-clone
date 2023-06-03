@@ -126,9 +126,7 @@ const ChatBox = () => {
   };
 
 
-useEffect(()=>{
-console.log(selectedChat)
-},[])
+
 
 const getMessageToSpecific=(data)=>{
  
